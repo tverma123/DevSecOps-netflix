@@ -1,31 +1,46 @@
-name: Docker Image CI
-
-on: [push]
-
+name: Sonar Scan Docker scout and build Image
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
   sonarcloud:
-    name: SonarCloud Scan
+    name: SonarCloud
     runs-on: ubuntu-latest
-
-    steps: 
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Sonar Scan
-        uses: sonarsource/sonarcloud-github-action@master
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
-           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-           SONAR_HOST_URL: "https://sonarcloud.io"
-           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with: 
-          args: >
-            -Dsonar.organization=tverma123
-            -Dsonar.projectKey=tverma123
-   
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   build:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag netflix-clone:$(date +%s)
+    - name: Setup Docker
+      uses: docker-practice/actions-setup-docker@v1
+      with: 
+        docker_version: '20.10.7'
+    - name: Docker build
+      run: docker build -f Dockerfile -t myapp:latest .
+    - uses: docker/scout-action@v1.2.2
+      with: 
+        dockerhub-user: ${{ secrets.REPO_USER }}
+        dockerhub-password: ${{ secrets.REPO_PWD }}
+        command: quickview,cves
+        only-severities: critical,high
+        sarif-file: scout-report.sarif
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with: 
+        name: sarif-findings
+        path: scout-report.sarif
