@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+  sast_scan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Sonar Scan
+        uses: SonarSource/sonarcloud-github-action@v2.1.1
+   
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag netflix-clone:$(date +%s)
