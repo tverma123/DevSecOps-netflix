@@ -44,3 +44,9 @@ jobs:
       with: 
         name: sarif-findings
         path: scout-report.sarif
+
+    - name: Deploy to kubernetes
+      uses: medyagh/setup-minikube@v0.0.14
+    - name: Run kuberenetes
+      run: kubectl apply -f Kubernetes/
+      
