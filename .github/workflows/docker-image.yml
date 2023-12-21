@@ -11,10 +11,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
       - name: Sonar Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: sonarsource/sonarcloud-github-action@master
         env:
            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
            SONAR_HOST_URL: "https://sonarcloud.io"
+           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with: 
           args: >
             -Dsonar.organization=tverma123
