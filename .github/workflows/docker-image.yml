@@ -10,8 +10,15 @@ jobs:
     steps: 
       - name: Checkout Code
         uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: Set SonarQube Token
+        run: echo "SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}" >> $GITHUB_ENV
       - name: Sonar Scan
-        uses: SonarSource/sonarcloud-github-action@v2.1.1
+        uses: sonarcloud/github-action@v3
         with:
            sonar-token: ${{ secrets.SONAR_TOKEN }}
    
