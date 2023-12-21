@@ -18,9 +18,9 @@ jobs:
       - name: Set SonarQube Token
         run: echo "SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}" >> $GITHUB_ENV
       - name: Sonar Scan
-        uses: sonarcloud/github-action@v3
+        uses: SonarSource/sonarqube-scan-action@v2.0.1
         with:
-           sonar-token: ${{ secrets.SONAR_TOKEN }}
+           sonar_token: ${{ secrets.SONAR_TOKEN }}
    
   build:
 
