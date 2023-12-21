@@ -3,25 +3,22 @@ name: Docker Image CI
 on: [push]
 
 jobs:
-  sast_scan:
+  sonarcloud:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
 
     steps: 
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-      - name: Set SonarQube Token
-        run: echo "SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}" >> $GITHUB_ENV
       - name: Sonar Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
            SONAR_HOST_URL: "https://sonarcloud.io"
+        with: 
+          args: >
+            -Dsonar.organization=tverma123
+            -Dsonar.projectKey=tverma123
    
   build:
 
